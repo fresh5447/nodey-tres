@@ -17,6 +17,7 @@
     "static-favicon": "~1.0.0"
   },
   "devDependencies": {
+    "html-webpack-plugin": "^1.6.1",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.11.0"
   }
