@@ -24,7 +24,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
+
+app.get('/users', function (req, res) {
+  res.render('users', { title: 'Hey', message: 'Hello there!'});
+});
 // app.use('/api/events', events);
 app.get('/api/events', events);
 
