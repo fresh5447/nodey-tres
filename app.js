@@ -5,12 +5,25 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var dbConfig = require('./db');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/textMate');
+// mongoose.connect(dbConfig.url);
 
-var routes = require('./routes/index');
+var app = express();
+
+var passport = require('passport');
+var expressSession = require('express-session');
+app.use(expressSession({secret: 'mySecretKey'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+var routes = require('./routes/index')(passport);
 var users = require('./routes/users');
 var events = require('./routes/events');
 
-var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +36,17 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+var flash = require('connect-flash');
+app.use(flash());
+
+var initPassport = require('./passport/init');
+initPassport(passport);
+
+
+
 app.use('/', routes);
+
 
 app.get('/users', function (req, res) {
   res.render('users', { title: 'Hey', message: 'Hello there!'});
