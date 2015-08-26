@@ -10,6 +10,8 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/textMate');
 // mongoose.connect(dbConfig.url);
 
+//weird
+
 var app = express();
 
 var passport = require('passport');
