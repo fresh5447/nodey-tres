@@ -1,48 +1,52 @@
-var express = require('express');
-var router = express.Router();
 var request = require('request');
-var ebUrl = "https://www.eventbriteapi.com/v3/users/me/owned_events?token=MGFZ4C7MMBDVQURVPW6X";
 
+var allEvents = [];
 
+module.exports = function(req, res, next) {
 
-// 	GET EVENTS AND STORE IN AN ARRAY
-router.get('/', function(req, res) {
-	request(ebUrl, function (error, response, body) {
-	  if (!error && response.statusCode == 200) {
-	  	var data = JSON.parse(response.body);
-	  	var allEvents = [];
-	  	eventIds = [];
-	  	for (var i = 0; i < data["events"].length; i++) {
-	  		allEvents.push(data["events"][i]);
-	  		eventIds.push(data["events"][i].id);
-	  		console.log(eventIds);
-	  	};
-	  	res.status(200).json(allEvents);
-	  }
-	})
-});
+	console.log("INSIDE MODULE ___ BEFORE FUNCTION");
 
-router.get('/id', function(req, res) {
-	request(ebUrl, function (error, response, body) {
-	  if (!error && response.statusCode == 200) {
-	  	var data = JSON.parse(response.body);
-	  	var allEvents = [];
-	  	for (var i = 0; i < data["events"].length; i++) {
-	  		allEvents.push(data["events"][i]);
-	  		console.log(allEvents);
-	  	};
-	  	res.status(200).json(allEvents);
-	  }
-	})
-});
+	(function hitEBup(){
+		request({
+			url: process.env.MY_OWNED_EVENTS + process.env.EB_PERSONAL_AUTH_TOKEN,
+			method: 'GET'
+			}, function(error, response, body){
+				console.log("INSIDE FUNCTIONNNNNN");
+				if (error) {
+					return console.log(error);
+				} else {
+					var data = JSON.parse(response.body);
+					var events = data.events;
+					for (var i = 0; i < events.length; i++) {
+					    var event = {
+					      name: events[i].name.text,
+					      description: events[i].description.text,
+					      id: events[i].id,
+					      url: events[i].url,
+					      start: events[i].start.local,
+					      end: events[i].end.local
+					  }
+					  if (!eventDoesExist(event, allEvents)) {
+					  	allEvents.push(event);
+					  } else {
+					  	console.log("EVENT EXISTS");
+					  }
+					};
+					return allEvents;
+				}
+		})
+	})();
 
+	function eventDoesExist(obj, list) {
+	    var i;
+	    for (i = 0; i < list.length; i++) {
+	        if (list[i] === obj) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 
+		res.send(allEvents);
 
-
-
-
-
-
-module.exports = router;
-
-
+}

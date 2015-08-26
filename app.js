@@ -1,3 +1,4 @@
+require('dotenv').load();
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -23,8 +24,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/api/events', events)
+
+app.get('/users', function (req, res) {
+  res.render('users', { title: 'Hey', message: 'Hello there!'});
+});
+// app.use('/api/events', events);
+app.get('/api/events', events);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
