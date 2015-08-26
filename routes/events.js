@@ -32,7 +32,7 @@ module.exports = function(req, res, next) {
 					  	console.log("EVENT EXISTS");
 					  }
 					};
-					return allEvents;
+					res.send(allEvents);
 				}
 		})
 	})();
@@ -47,6 +47,6 @@ module.exports = function(req, res, next) {
 	    return false;
 	}
 
-		res.send(allEvents);
+
 
 }
