@@ -1,7 +1,6 @@
 var request = require('request');
 var Event = require('../models/event');
-var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://localhost/textMate');
+
 
 var allEvents = [];
 
@@ -10,12 +9,12 @@ module.exports = function(req, res, next) {
     console.log("INSIDE MODULE ___ BEFORE FUNCTION");
     findOrCreateEvent = function(eventtt) {
         console.log("what is name?" + eventtt.name.text);
-        var name = eventtt.name.text;
-        var id = eventtt.id;
-        var description = eventtt.description.text;
-        var url = eventtt.url;
-        var start = eventtt.start;
-        var end = eventtt.end;
+        var name = String(eventtt.name.text);
+        var id = String(eventtt.id);
+        var description = String(eventtt.description.text);
+        var url = String(eventtt.url);
+        var start = String(eventtt.start);
+        var end = String(eventtt.end);
         // find a user in Mongo with provided username
         Event.findOne({
             'name': name
@@ -44,10 +43,10 @@ module.exports = function(req, res, next) {
                 // save the user
                 newEvent.save(function(err) {
                     if (err) {
-                        console.log('Error in Saving user: ' + err);
+                        console.log('Error in Saving event: ' + err);
                         throw err;
                     }
-                    console.log('Cow Creation succesful');
+                    console.log('Event Creation succesful');
                     return done(null, newEvent);
                 });
             }
@@ -66,7 +65,7 @@ module.exports = function(req, res, next) {
                 var data = JSON.parse(response.body);
                 var events = data.events;
                 for (var i = 0; i < events.length; i++) {
-                    console.log(events[i]);
+                    findOrCreateEvent(events[i]);
                     // findOrCreateEvent(events[i]);
 
                     // Delay the execution of findOrCreateEvent and execute the method
