@@ -2,11 +2,8 @@ var request = require('request');
 var Event = require('../models/event');
 
 
-var allEvents = [];
-
 module.exports = function(req, res, next) {
 
-    console.log("INSIDE MODULE ___ BEFORE FUNCTION");
     findOrCreateEvent = function(eventtt) {
         console.log("what is name?" + eventtt.name.text);
         var name = String(eventtt.name.text);
@@ -26,8 +23,7 @@ module.exports = function(req, res, next) {
             }
             // already exists
             if (eventtt) {
-                console.log('Event already exists with that name: ' + name);
-                return done(null, false, console.log('cow seems to be in existance'));
+                return console.log('no need to add event ' + name);
             } else {
                 // if there is no user with that email
                 // create the user
@@ -46,7 +42,8 @@ module.exports = function(req, res, next) {
                         console.log('Error in Saving event: ' + err);
                         throw err;
                     }
-                    console.log('Event Creation succesful');
+                    allEvents.push(newEvent);
+                    console.log( name + ' was added to database');
                     return done(null, newEvent);
                 });
             }
@@ -58,7 +55,6 @@ module.exports = function(req, res, next) {
             url: process.env.MY_OWNED_EVENTS + process.env.EB_PERSONAL_AUTH_TOKEN,
             method: 'GET'
         }, function(error, response, body) {
-            console.log("INSIDE FUNCTIONNNNNN");
             if (error) {
                 return console.log(error);
             } else {
@@ -66,14 +62,9 @@ module.exports = function(req, res, next) {
                 var events = data.events;
                 for (var i = 0; i < events.length; i++) {
                     findOrCreateEvent(events[i]);
-                    // findOrCreateEvent(events[i]);
-
-                    // Delay the execution of findOrCreateEvent and execute the method
-                    // in the next tick of the event loop
-
                 };
-                console.log("I HAVE SUCCEEDED");
-                // res.send(allEvents);
+                console.log("SUCCESS");
+                res.status(200).json("It worked!");
             }
         })
     })();
