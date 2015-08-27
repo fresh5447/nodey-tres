@@ -1,11 +1,58 @@
 var request = require('request');
 var Event = require('../models/event');
+var mongoose = require('mongoose');
+var db = mongoose.connect('mongodb://localhost/textMate');
 
 var allEvents = [];
 
 module.exports = function(req, res, next) {
 
     console.log("INSIDE MODULE ___ BEFORE FUNCTION");
+    findOrCreateEvent = function(eventtt) {
+        console.log("what is name?" + eventtt.name.text);
+        var name = eventtt.name.text;
+        var id = eventtt.id;
+        var description = eventtt.description.text;
+        var url = eventtt.url;
+        var start = eventtt.start;
+        var end = eventtt.end;
+        // find a user in Mongo with provided username
+        Event.findOne({
+            'name': name
+        }, function(err, eventtt) {
+            // In case of any error, return using the done method
+            if (err) {
+                console.log('Error in SignUp: ' + err);
+                return done(err);
+            }
+            // already exists
+            if (eventtt) {
+                console.log('Event already exists with that name: ' + name);
+                return done(null, false, console.log('cow seems to be in existance'));
+            } else {
+                // if there is no user with that email
+                // create the user
+                var newEvent = new Event();
+
+                // set the user's local credentials
+                newEvent.name = name;
+                newEvent.id = id;
+                newEvent.description = description;
+                newEvent.url = url;
+                newEvent.start = start;
+                newEvent.end = end;
+                // save the user
+                newEvent.save(function(err) {
+                    if (err) {
+                        console.log('Error in Saving user: ' + err);
+                        throw err;
+                    }
+                    console.log('Cow Creation succesful');
+                    return done(null, newEvent);
+                });
+            }
+        });
+    };
 
     (function hitEBup() {
         request({
@@ -19,120 +66,17 @@ module.exports = function(req, res, next) {
                 var data = JSON.parse(response.body);
                 var events = data.events;
                 for (var i = 0; i < events.length; i++) {
-                    console.log("MADE IT INSIDE FOR LOOP");
-                    var name = events[i].name.text;
-                    var description = events[i].description.text;
-                    var url = events[i].url;
-                    var start = events[i].start;
-                    var end = events[i].end;
+                    console.log(events[i]);
+                    // findOrCreateEvent(events[i]);
 
-                    initFoC();
                     // Delay the execution of findOrCreateEvent and execute the method
                     // in the next tick of the event loop
 
                 };
-                res.send(allEvents);
+                console.log("I HAVE SUCCEEDED");
+                // res.send(allEvents);
             }
         })
     })();
-
-    function eventDoesExist(obj, list) {
-        var i;
-        for (i = 0; i < list.length; i++) {
-            if (list[i] === obj) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    function findOrCreateEvent() {
-        // find a event in Mongo with provided name
-        Event.findOne({
-            'name': name
-        }, function(err, event) {
-            // In case of any error, return using the done method
-            if (err) {
-                console.log('Error in SignUp: ' + err);
-                return done(err);
-            }
-            // already exists
-            if (event) {
-                console.log('Event already exists with name: ' + name);
-                return done(null, false, req.flash('message', 'Event Already Exists'));
-            } else {
-                // if there is no event with that name
-                // create the event
-                var newEvent = new Event();
-
-                // set the user's local credentials
-                newEvent.name = events[i].name.text
-                newEvent.description = events[i].description.text;
-                newEvent.id = events[i].id;
-                newEvent.url = events[i].url;
-                newEvent.start = events[i].start.local;
-                newEvent.end = events[i].end.local;
-
-                // save the user
-                newEvent.save(function(err) {
-                    if (err) {
-                        console.log('Error in Saving user: ' + err);
-                        throw err;
-                    }
-                    console.log('Event Creation succesful');
-                    allEvents.push(newEvent);
-                    return done(null, newEvent);
-                });
-            }
-        });
-    };
-
-    initFoC = function(name, done) {
-
-        function findOrCreateEvent() {
-            // find a event in Mongo with provided name
-            Event.findOne({
-                'name': name
-            }, function(err, event) {
-                // In case of any error, return using the done method
-                if (err) {
-                    console.log('Error in SignUp: ' + err);
-                    return done(err);
-                }
-                // already exists
-                if (event) {
-                    console.log('Event already exists with name: ' + name);
-                    return done(null, false, req.flash('message', 'Event Already Exists'));
-                } else {
-                    // if there is no event with that name
-                    // create the event
-                    var newEvent = new Event();
-
-                    // set the events details
-                    newEvent.name = name
-                    newEvent.description = description;
-                    newEvent.id = id;
-                    newEvent.url = url;
-                    newEvent.start = start.local;
-                    newEvent.end = end.local;
-
-                    // save the user
-                    newEvent.save(function(err) {
-                        if (err) {
-                            console.log('Error in Saving user: ' + err);
-                            throw err;
-                        }
-                        console.log('Event Creation succesful');
-                        allEvents.push(newEvent);
-                        return done(null, newEvent);
-                    });
-                }
-            });
-        };
-        // Delay the execution of findOrCreateUser and execute the method
-        // in the next tick of the event loop
-        process.nextTick(findOrCreateEvent);
-    }
 
 }
