@@ -8,10 +8,15 @@ var isAuthenticated = function (req, res, next) {
 	if (req.isAuthenticated())
 		return next();
 	// if the user is not authenticated then redirect him to the login page
-	res.redirect('/');
+	res.redirect('/such');
 }
 
 module.exports = function(passport){
+
+	router.get('/such', function(req, res) {
+    	// Display the Login page with any flash message, if any
+		res.render('events');
+	});
 
 	/* GET login page. */
 	router.get('/', function(req, res) {

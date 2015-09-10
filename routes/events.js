@@ -12,7 +12,7 @@ module.exports = function(req, res, next) {
         var url = String(eventtt.url);
         var start = String(eventtt.start);
         var end = String(eventtt.end);
-        // find a user in Mongo with provided username
+        // find an event in Mongo with provided event name
         Event.findOne({
             'name': name
         }, function(err, eventtt) {
@@ -25,18 +25,18 @@ module.exports = function(req, res, next) {
             if (eventtt) {
                 return console.log('no need to add event ' + name);
             } else {
-                // if there is no user with that email
-                // create the user
+                // if there is no event with that name
+                // create the event
                 var newEvent = new Event();
 
-                // set the user's local credentials
+                // set the event's local credentials
                 newEvent.name = name;
                 newEvent.id = id;
                 newEvent.description = description;
                 newEvent.url = url;
                 newEvent.start = start;
                 newEvent.end = end;
-                // save the user
+                // save the e
                 newEvent.save(function(err) {
                     if (err) {
                         console.log('Error in Saving event: ' + err);
