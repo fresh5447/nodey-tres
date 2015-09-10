@@ -1,72 +1,61 @@
 var request = require('request');
+var express = require('express');
 var Event = require('../models/event');
+var config = require('../config');
+// var router = express.Router();
+var axios = require('axios');
+var _ = require('lodash');
 
 
-module.exports = function(req, res, next) {
+var error = function(res, response){
+  res.status(400).send({
+    error: true,
+    message: response
+  })
+};
 
-    findOrCreateEvent = function(eventtt) {
-        console.log("what is name?" + eventtt.name.text);
-        var name = String(eventtt.name.text);
-        var id = String(eventtt.id);
-        var description = String(eventtt.description.text);
-        var url = String(eventtt.url);
-        var start = String(eventtt.start);
-        var end = String(eventtt.end);
-        // find an event in Mongo with provided event name
-        Event.findOne({
-            'name': name
-        }, function(err, eventtt) {
-            // In case of any error, return using the done method
-            if (err) {
-                console.log('Error in SignUp: ' + err);
-                return done(err);
-            }
-            // already exists
-            if (eventtt) {
-                return console.log('no need to add event ' + name);
-            } else {
-                // if there is no event with that name
-                // create the event
-                var newEvent = new Event();
 
-                // set the event's local credentials
-                newEvent.name = name;
-                newEvent.id = id;
-                newEvent.description = description;
-                newEvent.url = url;
-                newEvent.start = start;
-                newEvent.end = end;
-                // save the e
-                newEvent.save(function(err) {
-                    if (err) {
-                        console.log('Error in Saving event: ' + err);
-                        throw err;
-                    }
-                    allEvents.push(newEvent);
-                    console.log( name + ' was added to database');
-                    return done(null, newEvent);
-                });
-            }
-        });
-    };
 
-    (function hitEBup() {
-        request({
-            url: process.env.MY_OWNED_EVENTS + process.env.EB_PERSONAL_AUTH_TOKEN,
-            method: 'GET'
-        }, function(error, response, body) {
-            if (error) {
-                return console.log(error);
-            } else {
-                var data = JSON.parse(response.body);
-                var events = data.events;
-                for (var i = 0; i < events.length; i++) {
-                    findOrCreateEvent(events[i]);
-                };
-                console.log("SUCCESS");
-                res.status(200).json("It worked!");
-            }
-        })
-    })();
+var getEventsForUser = function(req, res){
+
+    axios.get(config.url).then( function(response){
+          
+      var events = response.data.events;
+      _.each(events, Event.findOrCreateEvent );
+      res.status(200).send({
+        message: 'it worked!'
+      })
+      
+    }).catch( function(response){
+      error(res, response);
+    })
+};
+
+var getAllEventAttendees = function(req, res){
+
 
 }
+
+var createEvent = function(req, res){
+
+}
+
+var deleteEvent = function(req, res){
+
+}
+
+var updateEvent = function(req, res){
+
+}
+
+var routes = function(){
+    var router = express();
+    router.get('/', getEventsForUser);
+    router.get('/:eventId/attendees', getAllEventAttendees);
+    router.post('/', createEvent);
+    router.put('/:eventId', updateEvent);
+    router.delete('/:eventId', deleteEvent);
+    return router;
+};
+
+module.exports = routes;

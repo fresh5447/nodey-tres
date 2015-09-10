@@ -13,10 +13,10 @@ var isAuthenticated = function (req, res, next) {
 
 module.exports = function(passport){
 
-	router.get('/such', function(req, res) {
-    	// Display the Login page with any flash message, if any
-		res.render('events');
-	});
+	// router.get('/such', function(req, res) {
+ //    	// Display the Login page with any flash message, if any
+	// 	res.render('events');
+	// });
 
 	/* GET login page. */
 	router.get('/', function(req, res) {

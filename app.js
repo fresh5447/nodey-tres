@@ -23,7 +23,7 @@ app.use(passport.session());
 
 var routes = require('./routes/index')(passport);
 var users = require('./routes/users');
-var events = require('./routes/events');
+var events = require('./routes/events')();
 
 
 
@@ -47,14 +47,14 @@ initPassport(passport);
 
 
 
-app.use('/', routes);
+app.use('/api/v1/auth', routes);
 
 
 app.get('/users', function (req, res) {
   res.render('users', { title: 'Hey', message: 'Hello there!'});
 });
 // app.use('/api/events', events);
-app.get('/api/events', events);
+app.use('/api/v1/event', events);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
