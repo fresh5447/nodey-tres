@@ -8,9 +8,7 @@ var bodyParser = require('body-parser');
 var dbConfig = require('./db');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/textMate');
-// mongoose.connect(dbConfig.url);
 
-//weird
 
 var app = express();
 
