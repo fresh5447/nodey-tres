@@ -1,5 +1,6 @@
 var config = {
-	url: process.env.MY_OWNED_EVENTS + process.env.EB_PERSONAL_AUTH_TOKEN 
+	allEventsurl: process.env.EB_BASE + process.env.MY_OWNED_EVENTS + process.env.TOKEN,
+	getEventAttendeesUrl: process.env.EB_BASE + getAttendees
 };
 
 module.exports = config;
